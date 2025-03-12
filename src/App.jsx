@@ -8,6 +8,8 @@ function App() {
 
 
   const [todos, setTodos] = useState([])
+  const [filter, setFilter] = useState('all')
+  const [filterTodo, setFilterTodo] = useState([])
 
   function addTodo(todo) {
     setTodos((preV) => [todo, ...preV])
@@ -32,6 +34,18 @@ function App() {
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos))
   }, [todos])
+
+  useEffect(() => {
+    if (filter === 'all') {
+      setFilterTodo(todos)
+    }
+    else if (filter === 'pending') {
+      setFilterTodo(todos.filter((todo) => !todo.completed))
+    }
+    else if (filter === 'completed') {
+      setFilterTodo(todos.filter((todo) => todo.completed))
+    }
+  })
   return (
     <TodoProvider value={{ todos, addTodo, updateTodo, deleteTodo, toggleComplete }}>
       <div className="bg-white min-h-screen py-8">
@@ -42,8 +56,13 @@ function App() {
             <TodoForm />
           </div>
           <div className="flex flex-wrap gap-y-3">
+            <div className='flex justify-evenly w-full'>
+              <button className='rounded-lg px-8 py-1 bg-[#EDA415] text-white ' onClick={() => setFilter('all')} >All</button>
+              <button className='rounded-lg px-8 py-1 bg-[#EDA415] text-white ' onClick={() => setFilter('pending')}>Pending</button>
+              <button className='rounded-lg px-8 py-1 bg-[#EDA415] text-white ' onClick={() => setFilter('completed')}>Completed</button>
+            </div>
             {/*Loop and Add TodoItem here */}
-            {todos.map((todo) => (
+            {filterTodo.map((todo) => (
               <div className='w-full' key={todo.id}>
                 <TodoItems todo={todo} />
               </div>
